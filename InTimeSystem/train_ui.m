@@ -137,8 +137,8 @@ uicontrol('pos',[340 10 100 20],'string','open eyes' ,'callback',@open_eye);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function training(data_close,data_open)
         
-        close_psd = data_preprocessing(data_close);
-        open_psd = data_preprocessing(data_open);
+        close_psd = getPSD(data_close);
+        open_psd = getPSD(data_open);
         close_feature = feature_extraction(close_psd);
         open_feature = feature_extraction(open_psd);
         [feature,label] = create_label(close_feature,open_feature);
@@ -160,7 +160,7 @@ uicontrol('pos',[340 10 100 20],'string','open eyes' ,'callback',@open_eye);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    function psd = data_preprocessing(data)
+    function psd = getPSD(data)
         
         fs = 1000;
         window = hanning(fs);

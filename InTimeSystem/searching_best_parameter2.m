@@ -28,17 +28,25 @@ function [ACC] = preform(close_data,open_data,train_data_len,sample_len)
 
 [o_tr_f,o_te_f]= getfeature(open_data,train_data_len,sample_len);
 
-% o_tr_f = getFeature(o_tr_psd);
-% c_tr_f = getFeature(c_tr_psd);
-% o_te_f = getFeature(o_te_psd);
-% c_te_f = getFeature(c_te_psd);
 [X_train,Y_train]=getLabel(c_tr_f,o_tr_f);
 [X_test,Y_test]=getLabel(c_te_f,o_te_f);
 
 NumTrees = 100;
-B = TreeBagger(NumTrees,X_train,Y_train(:,1),'OOBPrediction','on');
-% ooberr = 1 - oobError(B,'Mode','ensemble');
-Y_e = str2double(predict(B,X_test));
+type = 'Multi';
+switch type
+    case 'Single'
+        B = TreeBagger(NumTrees,X_train,Y_train(:,1),'OOBPrediction','on');
+        Y_e = str2double(predict(B,X_test));
+    case 'Multi'
+        B1 = TreeBagger(NumTrees,X_train,Y_train(:,1),'OOBPrediction','on');
+        B2 = TreeBagger(NumTrees,X_train,Y_train(:,1),'OOBPrediction','on');
+        B3 = TreeBagger(NumTrees,X_train,Y_train(:,1),'OOBPrediction','on');
+        Y_e1 = str2double(predict(B1,X_test));
+        Y_e2 = str2double(predict(B2,X_test));
+        Y_e3 = str2double(predict(B3,X_test));
+        Y_e = mode([Y_e1,Y_e2,Y_e3],2);
+end
+
 ACC = 1 - confusion(Y_test(:,1)',Y_e');
 
 
@@ -78,32 +86,6 @@ for i = 1:w_l*0.25:train_data_len-w_l
     relative_power = bsxfun(@rdivide,band_power,sum(band_power,2));
     te_f(n,:) = reshape(relative_power,1,[]);
 end
-
-
-
-
-
-% function feature = getFeature(psd)
-% 
-% bw = [1,5,8,13,31];
-% resolution = 1;
-% for b_i = 1:length(bw)-1
-%     bands{b_i} = (bw(b_i)/resolution + 1) : bw(b_i+1)/resolution;
-% end
-% n_band = length(bands);
-% %»á×Ô¶¯reshape
-% AP = squeeze(sum(psd(:,bands{1}(1):bands{end}(end),:),2));
-% i = 0;
-% for  band = 1:n_band
-%     band_psd = psd(:,bands{band},:);
-%     band_sum = squeeze(sum(band_psd,2));
-%     i = i + 1;
-%     feature(:,:,i) = band_sum./AP;
-% end
-% % size(feature)
-% feature = permute(feature,[2,1,3]);
-% % shape = size(feature)
-% feature = reshape(feature,size(feature,1),[]);
 
 
 function [feature,label]=getLabel(c_feature,o_feature)
