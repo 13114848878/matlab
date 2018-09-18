@@ -37,6 +37,7 @@ uicontrol('pos',[340 10 100 20],'string','open eyes' ,'callback',@open_eye);
 %     end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function collect_data(~,~)
+        data_len = 30;%s
         collection_start = 1;
         set(htext,'string','Connected')
         %         pause(1)
@@ -67,7 +68,7 @@ uicontrol('pos',[340 10 100 20],'string','open eyes' ,'callback',@open_eye);
                 end
                 close_start_maker = 1;
                 triggerBox.OutputEventData(uint8(close_start_maker));
-                pause(10)
+                pause(data_len)
                 close_end_marker = 2;
                 triggerBox.OutputEventData(uint8(close_end_marker));
                 set(htext,'string','Collection is done')
@@ -83,7 +84,7 @@ uicontrol('pos',[340 10 100 20],'string','open eyes' ,'callback',@open_eye);
                 
                 open_start_maker = 3;
                 triggerBox.OutputEventData(uint8(open_start_maker));
-                pause(10)
+                pause(data_len)
                 open_end_marker = 4;
                 triggerBox.OutputEventData(uint8(open_end_marker));
                 set(htext,'string','Collection is done')
@@ -170,11 +171,11 @@ uicontrol('pos',[340 10 100 20],'string','open eyes' ,'callback',@open_eye);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function feature = filter_data(data)
-        
+        sample_len = 0.5;%s
         fs = 1000;
         data_len = size(data,2);
         %window length 样本长度
-        w_l = 0.5*fs;
+        w_l = sample_len*fs;%
         n = 0;
         for i = 1:w_l*0.25:data_len-w_l
             n = n + 1;
