@@ -41,7 +41,7 @@ uicontrol('pos',[340 10 100 20],'string','open eyes' ,'callback',@open_eye);
         collection_start = 1;
         set(htext,'string','Connected')
         %         pause(1)
-        time = 15;%s
+        time = data_len+2;%s
         fs = 1000;
         dataserver = DataServer('Neuracle',9,'127.0.0.1',8712,fs,time);
         dataserver.Open();
@@ -72,6 +72,7 @@ uicontrol('pos',[340 10 100 20],'string','open eyes' ,'callback',@open_eye);
                 close_end_marker = 2;
                 triggerBox.OutputEventData(uint8(close_end_marker));
                 set(htext,'string','Collection is done')
+                beep
                 close_start = 0;
             end
             
@@ -88,6 +89,7 @@ uicontrol('pos',[340 10 100 20],'string','open eyes' ,'callback',@open_eye);
                 open_end_marker = 4;
                 triggerBox.OutputEventData(uint8(open_end_marker));
                 set(htext,'string','Collection is done')
+                beep
                 open_start = 0;
             end
             
@@ -130,6 +132,7 @@ uicontrol('pos',[340 10 100 20],'string','open eyes' ,'callback',@open_eye);
         
         %traning
         if have_data
+            set(htext,'string','Model is training')
             training(data_close,data_open)
             set(htext,'string','Model was trained')
         end
@@ -156,9 +159,9 @@ uicontrol('pos',[340 10 100 20],'string','open eyes' ,'callback',@open_eye);
                 %the eyes open label is 1
                 label = label(:,1);
                 NumTrees = 100;
-                B1 = TreeBagger(NumTrees,feature,label,'OOBPrediction','on');
-                B2 = TreeBagger(NumTrees,feature,label,'OOBPrediction','on');
-                B3 = TreeBagger(NumTrees,feature,label,'OOBPrediction','on');
+                B1 = TreeBagger(NumTrees,feature,label);%,'OOBPrediction','on');
+                B2 = TreeBagger(NumTrees,feature,label);%,'OOBPrediction','on');
+                B3 = TreeBagger(NumTrees,feature,label);%,'OOBPrediction','on');
                 save B1 B1
                 save B2 B2
                 save B3 B3
